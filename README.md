@@ -223,8 +223,8 @@ MIT License — free to use, modify, and distribute.
 ## 👩‍💻 Author
 
 Built with ❤️ by **Nalla Tarun Sai**  
-🔗 [LinkedIn](https://linkedin.com/in/yourprofile) &nbsp;|&nbsp; 🐙 [GitHub](https://github.com/yourusername)
 
+🔗 [LinkedIn](https://www.linkedin.com/in/tarun-sai-nalla-95a1103a2) &nbsp;|&nbsp; 🐙 [GitHub](https://github.com/TarunSaiNalla)
 ---
 
 > *"Your lifestyle choices today determine your health tomorrow."*
