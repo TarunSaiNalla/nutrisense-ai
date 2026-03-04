@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriSense AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--surface:#fff;--surface2:#f8fafc;--border:#e2e8f0;
+  --green:#10b981;--green2:#059669;--green3:#d1fae5;--green4:#ecfdf5;
+  --amber:#f59e0b;--amber2:#d97706;--amber3:#fef3c7;
+  --red:#ef4444;--red2:#dc2626;--red3:#fee2e2;
+  --blue:#3b82f6;--blue2:#2563eb;--blue3:#dbeafe;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --font:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;
+  --radius:14px;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.08);
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:62px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.05)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:36px;height:36px;background:linear-gradient(135deg,#10b981,#34d399);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.brand-name{font-size:16px;font-weight:800;color:var(--text)}
+.brand-name span{color:var(--green)}
+.nav{display:flex;gap:6px}
+.nbtn{padding:7px 15px;border-radius:8px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;border:none;background:transparent;font-family:var(--font);transition:all .15s}
+.nbtn:hover{background:var(--surface2)}
+.nbtn.active{background:var(--green3);color:var(--green2)}
+.status{display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--mono);color:var(--text3)}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0f172a,#1e293b,#0f2b1e);padding:48px 28px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(16,185,129,.15),transparent)}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);border-radius:100px;padding:5px 14px;font-size:11px;font-weight:600;color:#34d399;letter-spacing:.5px;margin-bottom:18px}
+.hero h1{font-size:clamp(26px,5vw,44px);font-weight:800;color:#fff;letter-spacing:-1px;line-height:1.15;margin-bottom:12px}
+.hero h1 em{color:#34d399;font-style:normal}
+.hero p{font-size:14px;color:#94a3b8;max-width:500px;margin:0 auto 24px;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap}
+.hstat-val{font-size:24px;font-weight:800;color:#34d399}
+.hstat-lbl{font-size:11px;color:#64748b;margin-top:2px}
+
+/* LAYOUT */
+.main{max-width:1100px;margin:0 auto;padding:28px 20px;display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+@media(max-width:860px){.main{grid-template-columns:1fr}}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
+.stag{padding:3px 9px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.stag-g{background:var(--green3);color:var(--green2)}
+
+/* FORM */
+.form-body{padding:22px}
+.sec-lbl{font-size:10.5px;font-weight:700;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:12px;margin-top:2px;display:flex;align-items:center;gap:6px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px}
+.fg{display:flex;flex-direction:column;gap:5px}
+label{font-size:12px;font-weight:600;color:var(--text2)}
+input,select{height:42px;border:1.5px solid var(--border);border-radius:10px;padding:0 13px;font-size:13px;font-family:var(--font);color:var(--text);background:var(--surface2);transition:border-color .15s,box-shadow .15s;outline:none}
+input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.12)}
+input::placeholder{color:var(--text3)}
+
+/* BMI BOX */
+.bmi-box{display:flex;align-items:center;gap:12px;background:var(--green4);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:10px 14px;margin-bottom:18px}
+.bmi-num{font-size:24px;font-weight:800;color:var(--green2);font-family:var(--mono)}
+.bmi-lbl{font-size:9px;font-weight:700;color:var(--green2);text-transform:uppercase;letter-spacing:.5px}
+.bmi-cat{font-size:12px;color:var(--text2)}
+
+/* SLIDERS */
+.sl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.sl-wrap{display:flex;flex-direction:column;gap:5px}
+.sl-head{display:flex;justify-content:space-between;align-items:center}
+.sl-head label{font-size:12px;font-weight:600;color:var(--text2)}
+.sl-val{font-size:13px;font-weight:700;color:var(--green2);font-family:var(--mono)}
+input[type=range]{height:4px;border:none;border-radius:99px;padding:0;background:linear-gradient(to right,var(--green) 0%,var(--border) 0%);-webkit-appearance:none;appearance:none;cursor:pointer;box-shadow:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--green);box-shadow:0 1px 6px rgba(16,185,129,.5);cursor:pointer}
+
+/* FREQ BUTTONS */
+.freq-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.freq-item{display:flex;flex-direction:column;gap:4px}
+.freq-item label{font-size:11px;font-weight:600;color:var(--text2)}
+.fbg{display:flex;gap:2px}
+.fb{flex:1;height:28px;border:1.5px solid var(--border);border-radius:5px;background:var(--surface2);font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .12s;font-family:var(--font)}
+.fb:hover{border-color:var(--green);color:var(--green)}
+.fb.on{background:var(--green);border-color:var(--green);color:#fff}
+
+/* SUBMIT */
+.submit-btn{width:100%;height:48px;background:linear-gradient(135deg,var(--green),var(--green2));border:none;border-radius:11px;font-size:14px;font-weight:700;font-family:var(--font);color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(16,185,129,.4);transition:transform .15s,box-shadow .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(16,185,129,.5)}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RIGHT PANEL */
+.rstack{display:flex;flex-direction:column;gap:14px;position:sticky;top:72px}
+.placeholder{background:var(--surface);border:2px dashed var(--border);border-radius:var(--radius);padding:36px 20px;text-align:center}
+.ph-icon{font-size:36px;margin-bottom:10px}
+.ph-title{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:5px}
+.ph-sub{font-size:12px;color:var(--text3)}
+
+/* RESULT CARD */
+.rcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.1);overflow:hidden;animation:slideUp .4s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.rbanner{padding:22px;text-align:center}
+.rb-low{background:linear-gradient(135deg,#ecfdf5,#d1fae5)}
+.rb-moderate{background:linear-gradient(135deg,#fffbeb,#fef3c7)}
+.rb-high{background:linear-gradient(135deg,#fef2f2,#fee2e2)}
+.r-emoji{font-size:44px;margin-bottom:7px}
+.r-label{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.rl-low{color:#059669}.rl-moderate{color:#d97706}.rl-high{color:#dc2626}
+.r-conf{display:inline-block;margin-top:5px;padding:3px 11px;border-radius:100px;font-size:11px;font-weight:700;font-family:var(--mono)}
+.rc-low{background:var(--green3);color:var(--green2)}
+.rc-moderate{background:var(--amber3);color:var(--amber2)}
+.rc-high{background:var(--red3);color:var(--red2)}
+
+.rbody{padding:18px 20px}
+
+/* PROB BARS */
+.pb-row{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.pb-lbl{font-size:11px;font-weight:600;color:var(--text2);width:70px;flex-shrink:0}
+.pb-track{flex:1;height:7px;background:var(--border);border-radius:99px;overflow:hidden}
+.pb-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.34,1.56,.64,1);width:0%}
+.pf-low{background:linear-gradient(90deg,#10b981,#34d399)}
+.pf-moderate{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.pf-high{background:linear-gradient(90deg,#ef4444,#f87171)}
+.pb-pct{font-size:11px;font-weight:700;font-family:var(--mono);color:var(--text2);width:34px;text-align:right}
+
+/* BMI RESULT */
+.bmi-result{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:11px 15px;margin:14px 0}
+.bmr-lbl{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.bmr-val{font-size:20px;font-weight:800;font-family:var(--mono);color:var(--text)}
+.bmr-badge{padding:4px 11px;border-radius:7px;font-size:11px;font-weight:700}
+
+/* TIPS */
+.tips-title{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:9px}
+.tips-list{display:flex;flex-direction:column;gap:7px}
+.tip{display:flex;gap:9px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--text2);line-height:1.5;animation:fadeIn .4s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+
+/* INFO CARDS */
+.icard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+.icard-head{padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+.ilist{padding:10px 18px}
+.iitem{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text2)}
+.iitem:last-child{border:none}
+.idot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease;padding:16px}
+.modal{background:#fff;border-radius:20px;width:580px;max-width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.3);overflow:hidden}
+.modal-head{padding:22px 24px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fff}
+.modal-icon{font-size:22px;margin-right:10px}
+.modal-title{font-size:17px;font-weight:800;color:var(--text);display:flex;align-items:center}
+.modal-close{border:none;background:var(--surface2);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);color:var(--text2);transition:all .15s;display:flex;align-items:center;gap:5px}
+.modal-close:hover{background:var(--red3);color:var(--red2)}
+.modal-body{overflow-y:auto;flex:1;padding:0}
+.modal-body::-webkit-scrollbar{width:4px}
+.modal-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* HISTORY ITEMS */
+.hist-list{padding:8px 0}
+.hist-item{display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--border);transition:background .12s;animation:fadeIn .3s ease both}
+.hist-item:hover{background:var(--surface2)}
+.hist-item:last-child{border:none}
+.hist-num{width:28px;height:28px;border-radius:8px;background:var(--green3);color:var(--green2);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono)}
+.hist-info{flex:1}
+.hist-risk{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:7px}
+.hist-meta{font-size:10.5px;color:var(--text3);font-family:var(--mono)}
+.hist-right{text-align:right;flex-shrink:0}
+.hist-conf{font-size:16px;font-weight:800;color:var(--green2);font-family:var(--mono)}
+.hist-bmi{font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono)}
+.risk-badge{padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700}
+.rb-low-sm{background:var(--green3);color:var(--green2)}
+.rb-mod-sm{background:var(--amber3);color:var(--amber2)}
+.rb-high-sm{background:var(--red3);color:var(--red2)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border)}
+.stat-box{padding:22px 20px;text-align:center;border-right:1px solid var(--border)}
+.stat-box:last-child{border-right:none}
+.stat-val{font-size:28px;font-weight:900;color:var(--green2);font-family:var(--mono);letter-spacing:-1px}
+.stat-lbl{font-size:11px;color:var(--text3);margin-top:4px;font-weight:600;letter-spacing:.3px}
+.dist-section{padding:18px 24px}
+.dist-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.dist-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.dist-label{font-size:12px;font-weight:600;color:var(--text2);width:110px;flex-shrink:0;display:flex;align-items:center;gap:6px}
+.dist-bar-wrap{flex:1;height:10px;background:var(--border);border-radius:99px;overflow:hidden}
+.dist-bar{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.34,1.56,.64,1)}
+.dist-count{font-size:12px;font-weight:700;color:var(--text2);font-family:var(--mono);width:28px;text-align:right}
+
+.empty{text-align:center;padding:40px 24px}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-text{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:12px;color:var(--text3)}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:#1e293b;color:#fff;padding:11px 16px;border-radius:9px;font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:9999;animation:slideUp .3s ease;max-width:280px}
+
+@media(max-width:580px){
+  .fg2,.fg3{grid-template-columns:1fr}
+  .freq-grid{grid-template-columns:1fr 1fr}
+  .sl-grid{grid-template-columns:1fr}
+  .hero-stats{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon">🥗</div>
+    <div class="brand-name">Nutri<span>Sense</span> AI</div>
+  </div>
+  <div class="nav">
+    <button class="nbtn active">Analyzer</button>
+    <button class="nbtn" onclick="showHistory()">📋 History</button>
+    <button class="nbtn" onclick="showStats()">📊 Stats</button>
+  </div>
+  <div class="status"><div class="sdot"></div>Model Live · 97% Accuracy</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🤖 ML-Powered Health Analysis</div>
+  <h1>Your Personal<br><em>Health Risk Analyzer</em></h1>
+  <p>Enter your body stats, lifestyle and eating habits. Our AI predicts your health risk and gives personalised recommendations instantly.</p>
+  <div class="hero-stats">
+    <div><div class="hstat-val">97%</div><div class="hstat-lbl">Accuracy</div></div>
+    <div><div class="hstat-val">18</div><div class="hstat-lbl">Features</div></div>
+    <div><div class="hstat-val">5K+</div><div class="hstat-lbl">Samples</div></div>
+    <div><div class="hstat-val">3</div><div class="hstat-lbl">Risk Levels</div></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- FORM -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">📋 Health Profile</div>
+      <span class="stag stag-g">Fill all fields</span>
+    </div>
+    <div class="form-body">
+
+      <div class="sec-lbl">🧍 Body Stats</div>
+      <div class="fg3">
+        <div class="fg">
+          <label>Age</label>
+          <input type="number" id="age" placeholder="e.g. 25" min="10" max="100">
+        </div>
+        <div class="fg">
+          <label>Gender</label>
+          <select id="gender">
+            <option value="">Select</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Activity Level</label>
+          <select id="activity">
+            <option value="">Select</option>
+            <option>Sedentary (desk job)</option>
+            <option>Lightly Active</option>
+            <option>Moderately Active</option>
+            <option>Very Active</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg2">
+        <div class="fg">
+          <label>Weight (kg)</label>
+          <input type="number" id="weight" placeholder="e.g. 68" oninput="calcBMI()">
+        </div>
+        <div class="fg">
+          <label>Height (cm)</label>
+          <input type="number" id="height" placeholder="e.g. 170" oninput="calcBMI()">
+        </div>
+      </div>
+
+      <div class="bmi-box" id="bmiBox" style="display:none">
+        <div>
+          <div class="bmi-lbl">Your BMI</div>
+          <div class="bmi-num" id="bmiNum">--</div>
+        </div>
+        <div style="flex:1">
+          <div class="bmi-lbl">Category</div>
+          <div class="bmi-cat" id="bmiCat">--</div>
+        </div>
+        <div id="bmiEmoji" style="font-size:26px"></div>
+      </div>
+
+      <div class="sec-lbl">😴 Lifestyle</div>
+      <div class="sl-grid">
+        <div class="sl-wrap">
+          <div class="sl-head">
+            <label>Sleep (hours/night)</label>
+            <span class="sl-val" id="sleepVal">7 hrs</span>
+          </div>
+          <input type="range" id="sleep" min="3" max="12" step="0.5" value="7" oninput="syncSlider(this,'sleepVal',' hrs')">
+        </div>
+        <div class="sl-wrap">
+          <div class="sl-head">
+            <label>Water (litres/day)</label>
+            <span class="sl-val" id="waterVal">2 L</span>
+          </div>
+          <input type="range" id="water" min="0.5" max="5" step="0.5" value="2" oninput="syncSlider(this,'waterVal',' L')">
+        </div>
+      </div>
+
+      <div class="sec-lbl">🍽️ Eating Habits (days per week 0–7)</div>
+      <div class="freq-grid">
+        <div class="freq-item">
+          <label>🥦 Vegetables</label>
+          <div class="fbg" id="fb-vegetables"></div>
+        </div>
+        <div class="freq-item">
+          <label>🍎 Fruits</label>
+          <div class="fbg" id="fb-fruits"></div>
+        </div>
+        <div class="freq-item">
+          <label>🍗 Protein</label>
+          <div class="fbg" id="fb-protein"></div>
+        </div>
+        <div class="freq-item">
+          <label>🍔 Junk Food</label>
+          <div class="fbg" id="fb-junk"></div>
+        </div>
+        <div class="freq-item">
+          <label>🥤 Soda / Drinks</label>
+          <div class="fbg" id="fb-soda"></div>
+        </div>
+        <div class="freq-item">
+          <label>🌙 Late-Night Eating</label>
+          <div class="fbg" id="fb-late_night"></div>
+        </div>
+        <div class="freq-item">
+          <label>☕ Skip Breakfast</label>
+          <div class="fbg" id="fb-breakfast_skip"></div>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="analyze()">
+        <span id="btnTxt">🔬 Analyze My Health Risk</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="rstack">
+
+    <div class="placeholder" id="placeholder">
+      <div class="ph-icon">🔬</div>
+      <div class="ph-title">Results appear here</div>
+      <div class="ph-sub">Fill in your profile and click Analyze</div>
+    </div>
+
+    <div id="resultCard" style="display:none"></div>
+
+    <div class="icard">
+      <div class="icard-head">📊 Risk Levels</div>
+      <div class="ilist">
+        <div class="iitem"><div class="idot" style="background:#10b981"></div><b>Low Risk</b> — Great habits, keep it up!</div>
+        <div class="iitem"><div class="idot" style="background:#f59e0b"></div><b>Moderate Risk</b> — Some areas need attention.</div>
+        <div class="iitem"><div class="idot" style="background:#ef4444"></div><b>High Risk</b> — Lifestyle changes recommended.</div>
+      </div>
+    </div>
+
+    <div class="icard">
+      <div class="icard-head">🧠 Model Info</div>
+      <div class="ilist">
+        <div class="iitem"><div class="idot" style="background:#3b82f6"></div>Logistic Regression — Best Model</div>
+        <div class="iitem"><div class="idot" style="background:#3b82f6"></div>97% test accuracy · 5-fold CV</div>
+        <div class="iitem"><div class="idot" style="background:#3b82f6"></div>18 engineered features</div>
+        <div class="iitem"><div class="idot" style="background:#3b82f6"></div>Trained on 5,000 samples</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ── FREQ BUTTONS ── */
+const freqFields = ['vegetables','fruits','protein','junk','soda','late_night','breakfast_skip'];
+const freqVals = {};
+freqFields.forEach(f => {
+  freqVals[f] = 0;
+  const wrap = document.getElementById('fb-' + f);
+  [0,1,2,3,4,5,6,7].forEach(v => {
+    const b = document.createElement('button');
+    b.className = 'fb' + (v === 0 ? ' on' : '');
+    b.textContent = v;
+    b.type = 'button';
+    b.onclick = () => {
+      freqVals[f] = v;
+      wrap.querySelectorAll('.fb').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+    };
+    wrap.appendChild(b);
+  });
+});
+
+/* ── SLIDERS ── */
+function syncSlider(el, valId, suffix) {
+  document.getElementById(valId).textContent = el.value + suffix;
+  const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
+  el.style.background = `linear-gradient(to right,var(--green) ${pct}%,var(--border) ${pct}%)`;
+}
+syncSlider(document.getElementById('sleep'), 'sleepVal', ' hrs');
+syncSlider(document.getElementById('water'), 'waterVal', ' L');
+
+/* ── BMI ── */
+function calcBMI() {
+  const w = parseFloat(document.getElementById('weight').value);
+  const h = parseFloat(document.getElementById('height').value);
+  if (!w || !h || h < 50) { document.getElementById('bmiBox').style.display = 'none'; return; }
+  const bmi = (w / Math.pow(h / 100, 2)).toFixed(1);
+  const cat  = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal weight' : bmi < 30 ? 'Overweight' : 'Obese';
+  const emoji = bmi < 18.5 ? '🌱' : bmi < 25 ? '✅' : bmi < 30 ? '⚠️' : '🔴';
+  document.getElementById('bmiNum').textContent  = bmi;
+  document.getElementById('bmiCat').textContent  = cat;
+  document.getElementById('bmiEmoji').textContent = emoji;
+  document.getElementById('bmiBox').style.display = 'flex';
+}
+
+/* ── ANALYZE ── */
+async function analyze() {
+  const age      = document.getElementById('age').value.trim();
+  const gender   = document.getElementById('gender').value;
+  const weight   = document.getElementById('weight').value.trim();
+  const height   = document.getElementById('height').value.trim();
+  const activity = document.getElementById('activity').value;
+
+  if (!age || !gender || !weight || !height || !activity) {
+    toast('⚠️ Please fill in all required fields'); return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  document.getElementById('btnTxt').style.display  = 'none';
+  document.getElementById('spinner').style.display = 'block';
+  btn.disabled = true;
+
+  try {
+    const res  = await fetch('/predict', {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        age, gender, weight, height, activity,
+        sleep:          document.getElementById('sleep').value,
+        water:          document.getElementById('water').value,
+        junk:           freqVals['junk'],
+        vegetables:     freqVals['vegetables'],
+        fruits:         freqVals['fruits'],
+        protein:        freqVals['protein'],
+        breakfast_skip: freqVals['breakfast_skip'],
+        soda:           freqVals['soda'],
+        late_night:     freqVals['late_night'],
+      }),
+    });
+
+    const data = await res.json();
+    if (data.error) throw new Error(data.details || data.error);
+    renderResult(data);
+
+  } catch (err) {
+    toast('❌ ' + err.message);
+  } finally {
+    document.getElementById('btnTxt').style.display  = 'inline';
+    document.getElementById('spinner').style.display = 'none';
+    btn.disabled = false;
+  }
+}
+
+/* ── RENDER RESULT ── */
+function renderResult(d) {
+  const risk = d.risk.replace(' Risk','').toLowerCase();
+  const p    = d.probabilities;
+
+  const bmiColors = {
+    'Underweight': ['#dbeafe','#1d4ed8'],
+    'Normal':      ['#d1fae5','#065f46'],
+    'Overweight':  ['#fef3c7','#92400e'],
+    'Obese':       ['#fee2e2','#991b1b'],
+  };
+  const [bg, fg] = bmiColors[d.bmi_category] || ['#f1f5f9','#334155'];
+
+  const tipsHtml = (d.recommendations || [])
+    .map((r,i) => `<div class="tip" style="animation-delay:${i*.08}s">${r}</div>`)
+    .join('');
+
+  document.getElementById('resultCard').innerHTML = `
+    <div class="rcard">
+      <div class="rbanner rb-${risk}">
+        <div class="r-emoji">${d.emoji}</div>
+        <div class="r-label rl-${risk}">${d.risk}</div>
+        <div class="r-conf rc-${risk}">Confidence: ${d.confidence}%</div>
+      </div>
+      <div class="rbody">
+        <div class="pb-row"><span class="pb-lbl">💚 Low</span><div class="pb-track"><div class="pb-fill pf-low" data-w="${p.low}"></div></div><span class="pb-pct">${p.low}%</span></div>
+        <div class="pb-row"><span class="pb-lbl">🟡 Moderate</span><div class="pb-track"><div class="pb-fill pf-moderate" data-w="${p.moderate}"></div></div><span class="pb-pct">${p.moderate}%</span></div>
+        <div class="pb-row"><span class="pb-lbl">🔴 High</span><div class="pb-track"><div class="pb-fill pf-high" data-w="${p.high}"></div></div><span class="pb-pct">${p.high}%</span></div>
+        <div class="bmi-result">
+          <div><div class="bmr-lbl">Your BMI</div><div class="bmr-val">${d.bmi}</div></div>
+          <div class="bmr-badge" style="background:${bg};color:${fg}">${d.bmi_category}</div>
+        </div>
+        ${tipsHtml ? `<div class="tips-title">💡 Personalised Recommendations</div><div class="tips-list">${tipsHtml}</div>` : ''}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('placeholder').style.display  = 'none';
+  document.getElementById('resultCard').style.display   = 'block';
+
+  setTimeout(() => {
+    document.querySelectorAll('.pb-fill').forEach(el => el.style.width = el.dataset.w + '%');
+  }, 60);
+
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* ── HISTORY ── */
+async function showHistory() {
+  try {
+    const res  = await fetch('/history');
+    const data = await res.json();
+
+    let bodyHtml = '';
+    if (!data.count) {
+      bodyHtml = `
+        <div class="empty">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-text">No predictions yet</div>
+          <div class="empty-sub">Click "Analyze My Health Risk" to get started</div>
+        </div>`;
+    } else {
+      const riskEmoji = {'Low Risk':'💚','Moderate Risk':'🟡','High Risk':'🔴'};
+      const riskClass = {'Low Risk':'rb-low-sm','Moderate Risk':'rb-mod-sm','High Risk':'rb-high-sm'};
+      const rows = data.history.map((h, i) => `
+        <div class="hist-item" style="animation-delay:${i * 0.05}s">
+          <div class="hist-num">${data.count - i}</div>
+          <div class="hist-info">
+            <div class="hist-risk">
+              ${riskEmoji[h.risk] || ''} ${h.risk}
+              <span class="risk-badge ${riskClass[h.risk] || ''}">${h.confidence}% confidence</span>
+            </div>
+            <div class="hist-meta">${h.timestamp} &nbsp;·&nbsp; Age ${h.age}</div>
+          </div>
+          <div class="hist-right">
+            <div class="hist-conf">${h.confidence}%</div>
+            <div class="hist-bmi">BMI ${h.bmi}</div>
+          </div>
+        </div>`).join('');
+      bodyHtml = `<div class="hist-list">${rows}</div>`;
+    }
+
+    openModal('📋', `Prediction History <span style="color:var(--text3);font-size:14px;font-weight:500">(${data.count} total)</span>`, bodyHtml);
+  } catch {
+    toast('❌ Could not load history — is Flask running?');
+  }
+}
+
+/* ── STATS ── */
+async function showStats() {
+  try {
+    const res  = await fetch('/stats');
+    const data = await res.json();
+
+    if (data.message) {
+      toast('📊 No predictions yet — analyze first!'); return;
+    }
+
+    const dist   = data.risk_distribution;
+    const total  = data.total_predictions;
+    const colors = {'Low Risk':'#10b981','Moderate Risk':'#f59e0b','High Risk':'#ef4444'};
+    const emojis = {'Low Risk':'💚','Moderate Risk':'🟡','High Risk':'🔴'};
+
+    const distRows = Object.entries(dist).map(([k, v]) => {
+      const pct = Math.round((v / total) * 100);
+      return `
+        <div class="dist-row">
+          <div class="dist-label">${emojis[k] || ''} ${k}</div>
+          <div class="dist-bar-wrap">
+            <div class="dist-bar" data-w="${pct}" style="background:${colors[k] || '#94a3b8'};width:0%"></div>
+          </div>
+          <div class="dist-count">${v}</div>
+        </div>`;
+    }).join('');
+
+    const bodyHtml = `
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-val">${data.total_predictions}</div>
+          <div class="stat-lbl">Total Analyzed</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${data.average_confidence}%</div>
+          <div class="stat-lbl">Avg Confidence</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${data.average_bmi}</div>
+          <div class="stat-lbl">Avg BMI</div>
+        </div>
+      </div>
+      <div class="dist-section">
+        <div class="dist-title">Risk Distribution</div>
+        ${distRows}
+      </div>`;
+
+    openModal('📊', 'Session Stats', bodyHtml);
+
+    // animate bars after render
+    setTimeout(() => {
+      document.querySelectorAll('.dist-bar').forEach(el => {
+        el.style.width = el.dataset.w + '%';
+      });
+    }, 80);
+
+  } catch {
+    toast('❌ Could not load stats — is Flask running?');
+  }
+}
+
+/* ── MODAL ── */
+function openModal(icon, title, bodyHtml) {
+  document.querySelectorAll('.modal-overlay').forEach(el => el.remove());
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title"><span class="modal-icon">${icon}</span>${title}</div>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕ Close</button>
+      </div>
+      <div class="modal-body">${bodyHtml}</div>
+    </div>`;
+  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+}
+
+/* ── TOAST ── */
+function toast(msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+</script>
+</body>
+</html>
