@@ -222,7 +222,7 @@ MIT License — free to use, modify, and distribute.
 
 ## 👩‍💻 Author
 
-Built with ❤️ by **Nalla Sai Misrita**  
+Built with ❤️ by **Nalla Tarun Sai**  
 🔗 [LinkedIn](https://linkedin.com/in/yourprofile) &nbsp;|&nbsp; 🐙 [GitHub](https://github.com/yourusername)
 
 ---
